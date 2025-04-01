@@ -172,7 +172,7 @@ export default function RegisterForm() {
           error={errors.confirm_password}
         />
         <Button type="submit" label="Registrarse" />
-        <div className="text-center text-sm text-gray-600 mt-4">
+        <div className="text-center text-sm text-white mt-4">
           ¿Ya tienes una cuenta?{" "}
           <a href="/login" className="text-blue-600 hover:underline">
             Inicia sesión
