@@ -30,7 +30,20 @@ export default function RegisterForm() {
     if (!formData.last_name) newErrors.last_name = "Campo requerido";
     if (!formData.email || !formData.email.includes("@"))
       newErrors.email = "Correo inválido";
-    if (!formData.password) newErrors.password = "Campo requerido";
+
+    // Validación fuerte de contraseña
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = "La contraseña debe tener al menos 8 caracteres";
+    } else if (!/[A-Z]/.test(formData.password)) {
+      newErrors.password = "Debe contener al menos una letra mayúscula";
+    } else if (!/[a-z]/.test(formData.password)) {
+      newErrors.password = "Debe contener al menos una letra minúscula";
+    } else if (!/[0-9]/.test(formData.password)) {
+      newErrors.password = "Debe contener al menos un número";
+    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(formData.password)) {
+      newErrors.password = "Debe contener al menos un carácter especial";
+    }
+
     if (formData.password !== formData.confirm_password)
       newErrors.confirm_password = "Las contraseñas no coinciden";
 
@@ -67,11 +80,11 @@ export default function RegisterForm() {
       if (response.ok) {
         setSuccess(true);
       } else {
-        console.error('❌ Error en el registro');
+        console.error('Error en el registro');
       }
       */
     } catch (error) {
-      console.error("❌ Error de red:", error);
+      console.error("Error de red:", error);
     }
   };
 
