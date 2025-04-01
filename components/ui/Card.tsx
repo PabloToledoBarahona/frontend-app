@@ -1,11 +1,9 @@
 import React from 'react';
 
-export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-    return (
-      <div
-        className={`bg-white rounded-2xl shadow-xl p-10 w-full max-w-lg border border-gray-100 ${className}`}
-      >
-        {children}
-      </div>
-    );
-  }
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-[#1f2937] p-10 rounded-2xl shadow-2xl w-full max-w-md">
+      {children}
+    </div>
+  );
+}

@@ -2,16 +2,18 @@ import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
+  variant?: 'primary' | 'secondary';
 }
 
-export function Button({ label, className = '', ...props }: ButtonProps) {
+export function Button({ label, variant = 'primary', className = '', ...props }: ButtonProps) {
+  const baseStyle = `w-full py-2 px-4 rounded-lg font-semibold transition duration-200 shadow-md`;
+  const variants = {
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+    secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
+  };
+
   return (
-    <button
-      {...props}
-      className={`w-full py-3 px-4 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 
-        text-white font-semibold shadow-md hover:shadow-lg hover:brightness-110 
-        transition-all duration-200 ${className}`}
-    >
+    <button {...props} className={`${baseStyle} ${variants[variant]} ${className}`}>
       {label}
     </button>
   );
