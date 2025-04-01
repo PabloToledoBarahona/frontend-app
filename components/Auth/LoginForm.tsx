@@ -1,28 +1,30 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Heading } from '@/components/ui/Heading';
-import { Card } from '@/components/ui/Card';
-import { FiMail, FiLock } from 'react-icons/fi';
+import { useState } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Heading } from "@/components/ui/Heading";
+import { Card } from "@/components/ui/Card";
+import { FiMail, FiLock } from "react-icons/fi";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
   const [success, setSuccess] = useState(false);
 
   const validate = () => {
     const newErrors: typeof errors = {};
-    if (!formData.email || !formData.email.includes('@')) {
-      newErrors.email = 'Correo inválido';
+    if (!formData.email || !formData.email.includes("@")) {
+      newErrors.email = "Correo inválido";
     }
     if (!formData.password) {
-      newErrors.password = 'Campo requerido';
+      newErrors.password = "Campo requerido";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -30,7 +32,7 @@ export default function LoginForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +41,7 @@ export default function LoginForm() {
 
     // Simulación del backend
     setTimeout(() => {
-      console.log('✅ Login enviado:', formData);
+      console.log("✅ Login enviado:", formData);
       setSuccess(true);
     }, 1000);
   };
@@ -47,15 +49,26 @@ export default function LoginForm() {
   if (success) {
     return (
       <Card>
-        <Heading title="¡Bienvenido!" subtitle="Inicio de sesión exitoso" center />
-        <Button label="Ir al inicio" onClick={() => (window.location.href = '/')} />
+        <Heading
+          title="¡Bienvenido!"
+          subtitle="Inicio de sesión exitoso"
+          center
+        />
+        <Button
+          label="Ir al inicio"
+          onClick={() => (window.location.href = "/")}
+        />
       </Card>
     );
   }
 
   return (
     <Card>
-      <Heading title="Iniciar Sesión" subtitle="Ingresa tus credenciales" center />
+      <Heading
+        title="Iniciar Sesión"
+        subtitle="Ingresa tus credenciales"
+        center
+      />
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           name="email"
@@ -76,6 +89,14 @@ export default function LoginForm() {
           error={errors.password}
         />
         <Button type="submit" label="Iniciar Sesión" />
+        <div className="flex justify-between text-sm text-gray-600 mt-4">
+          <a href="/forgot-password" className="hover:underline text-blue-600">
+            ¿Olvidaste tu contraseña?
+          </a>
+          <a href="/register" className="hover:underline text-blue-600">
+            Crear cuenta
+          </a>
+        </div>
       </form>
     </Card>
   );
