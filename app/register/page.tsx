@@ -2,9 +2,8 @@ import RegisterForm from '@/components/Auth/RegisterForm';
 
 export default function RegisterPage() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Registro de Usuario</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <RegisterForm />
-    </div>
+    </main>
   );
 }

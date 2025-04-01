@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Heading';
+import { Card } from '@/components/ui/Card';
 import { User } from '@/types/User';
 
 export default function RegisterForm() {
@@ -20,20 +24,23 @@ export default function RegisterForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Datos enviados (registro):', formData);
-    // En el futuro: aquí se haría un fetch POST al backend
+    console.log('Registro enviado:', formData);
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '400px' }}>
-      <input name="username" placeholder="Nombre de usuario" onChange={handleChange} />
-      <input name="first_name" placeholder="Nombre" onChange={handleChange} />
-      <input name="last_name" placeholder="Apellido" onChange={handleChange} />
-      <input name="phone_number" placeholder="Teléfono" onChange={handleChange} />
-      <input name="email" type="email" placeholder="Correo electrónico" onChange={handleChange} />
-      <input name="password" type="password" placeholder="Contraseña" onChange={handleChange} />
-      <input name="confirm_password" type="password" placeholder="Confirmar contraseña" onChange={handleChange} />
-      <button type="submit" style={{ marginTop: '12px' }}>Registrarse</button>
-    </form>
+    <Card>
+      <Heading title="Registro de Usuario" subtitle="Crea tu cuenta para comenzar" center />
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input name="username" placeholder="Nombre de usuario" value={formData.username} onChange={handleChange} />
+        <Input name="first_name" placeholder="Nombre" value={formData.first_name} onChange={handleChange} />
+        <Input name="last_name" placeholder="Apellido" value={formData.last_name} onChange={handleChange} />
+        <Input name="phone_number" placeholder="Teléfono" value={formData.phone_number || ''} onChange={handleChange} />
+        <Input name="email" type="email" placeholder="Correo electrónico" value={formData.email} onChange={handleChange} />
+        <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
+        <Input name="confirm_password" type="password" placeholder="Confirmar contraseña" value={formData.confirm_password || ''} onChange={handleChange} />
+        <Button type="submit" label="Registrarse" />
+      </form>
+    </Card>
   );
 }
