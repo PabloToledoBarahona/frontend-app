@@ -1,5 +1,5 @@
 "use client";
-
+import apiClient from '@/lib/apiClient';
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -38,12 +38,15 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
-    // Simulación del backend
-    setTimeout(() => {
-      console.log("✅ Login enviado:", formData);
-      setSuccess(true);
-    }, 1000);
+  
+    try {
+      const response = await apiClient.post('/login', formData);
+      console.log('✅ Login correcto:', response.data);
+  
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error.response?.data || error.message);
+    }
   };
 
   if (success) {

@@ -1,5 +1,5 @@
 "use client";
-
+import apiClient from '@/lib/apiClient';
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -59,32 +59,19 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
+  
     try {
       const { confirm_password, ...dataToSend } = formData;
-
-      // Simulación de envío al backend
-      setTimeout(() => {
-        console.log("Datos enviados al backend (simulado):", dataToSend);
-        setSuccess(true);
-      }, 1000);
-
-      // Cuando tengamos el backend listo descomentamos esto:
-      /*
-      const response = await fetch('https://tubackend.com/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend),
-      });
   
-      if (response.ok) {
+      const response = await apiClient.post('/register', dataToSend); // 👈 llamada real
+  
+      if (response.status === 201 || response.status === 200) {
         setSuccess(true);
       } else {
-        console.error('Error en el registro');
+        console.error("Error en el registro:", response.data);
       }
-      */
-    } catch (error) {
-      console.error("Error de red:", error);
+    } catch (error: any) {
+      console.error("Error de red:", error.response?.data || error.message);
     }
   };
 
