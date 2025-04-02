@@ -1,5 +1,7 @@
 "use client";
-import apiClient from '@/lib/apiClient';
+
+import { useRouter } from "next/navigation";
+import apiClient from "@/lib/apiClient";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +11,8 @@ import { User } from "@/types/User";
 import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
 
 export default function RegisterForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<User>({
     username: "",
     first_name: "",
@@ -31,7 +35,6 @@ export default function RegisterForm() {
     if (!formData.email || !formData.email.includes("@"))
       newErrors.email = "Correo inválido";
 
-    // Validación fuerte de contraseña
     if (!formData.password || formData.password.length < 8) {
       newErrors.password = "La contraseña debe tener al menos 8 caracteres";
     } else if (!/[A-Z]/.test(formData.password)) {
@@ -69,11 +72,12 @@ export default function RegisterForm() {
         confirmPassword: confirm_password,
       };
 
-      const response = await apiClient.post('/sign-up', dataToSend);
+      const response = await apiClient.post("/sign-up", dataToSend);
 
-      if (response.status === 201 || response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
+        const otp = response.data.otp;
         const email = formData.email;
-        window.location.href = `/confirm-account?email=${encodeURIComponent(email)}`;
+        router.push(`/confirm-account?email=${encodeURIComponent(email)}&otp=${otp}`);
       } else {
         console.error("Error en el registro:", response.data);
       }
@@ -81,22 +85,6 @@ export default function RegisterForm() {
       console.error("Error de red:", error.response?.data || error.message);
     }
   };
-
-  if (success) {
-    return (
-      <Card>
-        <Heading
-          title="¡Gracias por registrarte!"
-          subtitle="Tu cuenta ha sido creada con éxito"
-          center
-        />
-        <Button
-          label="Iniciar sesión"
-          onClick={() => (window.location.href = "/login")}
-        />
-      </Card>
-    );
-  }
 
   return (
     <Card>
@@ -107,64 +95,13 @@ export default function RegisterForm() {
       />
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          name="username"
-          placeholder="Nombre de usuario"
-          value={formData.username}
-          onChange={handleChange}
-          icon={<FiUser />}
-          error={errors.username}
-        />
-        <Input
-          name="first_name"
-          placeholder="Nombre"
-          value={formData.first_name}
-          onChange={handleChange}
-          icon={<FiUser />}
-          error={errors.first_name}
-        />
-        <Input
-          name="last_name"
-          placeholder="Apellido"
-          value={formData.last_name}
-          onChange={handleChange}
-          icon={<FiUser />}
-          error={errors.last_name}
-        />
-        <Input
-          name="phone_number"
-          placeholder="Teléfono"
-          value={formData.phone_number || ""}
-          onChange={handleChange}
-          icon={<FiPhone />}
-        />
-        <Input
-          name="email"
-          type="email"
-          placeholder="Correo electrónico"
-          value={formData.email}
-          onChange={handleChange}
-          icon={<FiMail />}
-          error={errors.email}
-        />
-        <Input
-          name="password"
-          type="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          icon={<FiLock />}
-          error={errors.password}
-        />
-        <Input
-          name="confirm_password"
-          type="password"
-          placeholder="Confirmar contraseña"
-          value={formData.confirm_password || ""}
-          onChange={handleChange}
-          icon={<FiLock />}
-          error={errors.confirm_password}
-        />
+        <Input name="username" placeholder="Nombre de usuario" value={formData.username} onChange={handleChange} icon={<FiUser />} error={errors.username} />
+        <Input name="first_name" placeholder="Nombre" value={formData.first_name} onChange={handleChange} icon={<FiUser />} error={errors.first_name} />
+        <Input name="last_name" placeholder="Apellido" value={formData.last_name} onChange={handleChange} icon={<FiUser />} error={errors.last_name} />
+        <Input name="phone_number" placeholder="Teléfono" value={formData.phone_number || ""} onChange={handleChange} icon={<FiPhone />} />
+        <Input name="email" type="email" placeholder="Correo electrónico" value={formData.email} onChange={handleChange} icon={<FiMail />} error={errors.email} />
+        <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} icon={<FiLock />} error={errors.password} />
+        <Input name="confirm_password" type="password" placeholder="Confirmar contraseña" value={formData.confirm_password || ""} onChange={handleChange} icon={<FiLock />} error={errors.confirm_password} />
         <Button type="submit" label="Registrarse" />
         <div className="text-center text-sm text-white mt-4">
           ¿Ya tienes una cuenta?{" "}

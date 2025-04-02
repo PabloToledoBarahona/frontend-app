@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Heading } from "@/components/ui/Heading";
 import { Input } from "@/components/ui/Input";
@@ -15,6 +15,7 @@ export default function ConfirmAccountMessage() {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams?.get("email");
 
@@ -29,6 +30,9 @@ export default function ConfirmAccountMessage() {
       const response = await apiClient.post("/confirm-account", { email, otp });
       setMessage(response.data?.message || "Cuenta confirmada");
       setSuccess(true);
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
     } catch (error: any) {
       console.error("Error al confirmar cuenta:", error.response?.data || error.message);
       setMessage("Error al confirmar cuenta. Verifica tus datos.");
