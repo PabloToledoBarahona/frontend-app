@@ -59,14 +59,21 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-  
+
     try {
-      const { confirm_password, ...dataToSend } = formData;
-  
-      const response = await apiClient.post('/register', dataToSend); // 👈 llamada real
-  
+      const { confirm_password, password, ...rest } = formData;
+
+      const dataToSend = {
+        ...rest,
+        password,
+        confirmPassword: confirm_password,
+      };
+
+      const response = await apiClient.post('/sign-up', dataToSend);
+
       if (response.status === 201 || response.status === 200) {
-        setSuccess(true);
+        const email = formData.email;
+        window.location.href = `/confirm-account?email=${encodeURIComponent(email)}`;
       } else {
         console.error("Error en el registro:", response.data);
       }

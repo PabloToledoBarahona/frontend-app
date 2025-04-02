@@ -40,8 +40,8 @@ export default function LoginForm() {
     if (!validate()) return;
   
     try {
-      const response = await apiClient.post('/login', formData);
-      console.log('✅ Login correcto:', response.data);
+      const response = await apiClient.post('/sign-in', formData);
+      console.log('Login correcto:', response.data);
   
       window.location.href = '/';
     } catch (error: any) {
