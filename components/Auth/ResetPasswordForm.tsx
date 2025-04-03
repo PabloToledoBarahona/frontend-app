@@ -58,7 +58,7 @@ export default function ResetPasswordForm() {
 
     try {
       setLoading(true);
-      const response = await apiClient.post('/reset-password', {
+      const response = await apiClient.post('/auth/reset-password', {
         email,
         otp,
         newPassword,

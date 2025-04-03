@@ -82,7 +82,7 @@ export default function RegisterForm() {
         confirmPassword: confirm_password,
       };
 
-      const response = await apiClient.post("/sign-up", dataToSend);
+      const response = await apiClient.post("/auth/sign-up", dataToSend);
 
       if (response.status === 200 || response.status === 201) {
         const otp = response.data.otp;

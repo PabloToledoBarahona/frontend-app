@@ -45,7 +45,7 @@ export default function ConfirmAccountMessage() {
     if (!validate()) return;
 
     try {
-      const response = await apiClient.post("/confirm-account", { email, otp });
+      const response = await apiClient.post("/auth/confirm-account", { email, otp });
       setMessage(response.data?.message || "Cuenta confirmada");
       setSuccess(true);
       setTimeout(() => {

@@ -43,13 +43,20 @@ export default function LoginForm() {
 
     try {
       setLoading(true);
-      const response = await apiClient.post('/sign-in', formData);
+      const response = await apiClient.post('/auth/sign-in', formData);
 
-      console.log('Login correcto:', response.data);
-      setSuccess(true);
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1500);
+      const token = response.data?.data?.authToken;
+
+      if (token) {
+        localStorage.setItem('authToken', token); 
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.href = "/channels"; 
+        }, 1000);
+      } else {
+        setMessage("Token no recibido. Intenta de nuevo.");
+      }
+
     } catch (error: any) {
       console.error('Error al iniciar sesión:', error.response?.data || error.message);
       const backendMsg =
@@ -65,7 +72,7 @@ export default function LoginForm() {
       {success ? (
         <>
           <Heading title="¡Bienvenido!" subtitle="Inicio de sesión exitoso" center />
-          <Button label="Ir al inicio" onClick={() => (window.location.href = "/")} />
+          <Button label="Ir a mis canales" onClick={() => (window.location.href = "/channels")} />
         </>
       ) : (
         <>
