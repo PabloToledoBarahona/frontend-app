@@ -72,8 +72,9 @@ export default function LoginForm() {
       {success ? (
         <>
           <Heading title="¡Bienvenido!" subtitle="Inicio de sesión exitoso" center />
-          <div className="flex justify-center mt-4">
-            <Button label="Ir a mis canales" onClick={() => router.push('/channels')} />
+          <div className="flex justify-center gap-4 mt-4 flex-col sm:flex-row">
+            <Button label="Ir a mis canales" onClick={() => window.location.href = "/channels"} />
+            <Button label="Cargar .CSV" onClick={() => window.location.href = "/excel"} variant="secondary" />
           </div>
         </>
       ) : (
