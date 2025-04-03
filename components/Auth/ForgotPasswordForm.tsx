@@ -15,10 +15,14 @@ export default function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const validateEmail = (value: string) => {
+    return /\S+@\S+\.\S+/.test(value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes("@")) {
+    if (!email || !validateEmail(email)) {
       setError("Correo inválido");
       return;
     }
@@ -33,10 +37,8 @@ export default function ForgotPasswordForm() {
       setSent(true);
     } catch (err: any) {
       console.error("Error:", err.response?.data || err.message);
-      setError(
-        err.response?.data?.data?.error?.[0]?.message ||
-        "Ocurrió un error. Intenta nuevamente."
-      );
+      const backendMsg = err.response?.data?.data?.error?.[0]?.message;
+      setError(backendMsg || "Ocurrió un error. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -50,25 +52,39 @@ export default function ForgotPasswordForm() {
           subtitle={message}
           center
         />
-        <Button label="Restablecer contraseña" onClick={() => (window.location.href = "/reset-password")} />
+        <Button
+          label="Restablecer contraseña"
+          onClick={() => (window.location.href = "/reset-password")}
+        />
       </Card>
     );
   }
 
   return (
     <Card>
-      <Heading title="¿Olvidaste tu contraseña?" subtitle="Te ayudaremos a recuperarla" center />
+      <Heading
+        title="¿Olvidaste tu contraseña?"
+        subtitle="Te ayudaremos a recuperarla"
+        center
+      />
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           name="email"
           placeholder="Correo electrónico"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError("");
+          }}
           icon={<FiMail />}
           error={error}
         />
-        <Button type="submit" label={loading ? "Enviando..." : "Enviar código de recuperación"} disabled={loading} />
+        <Button
+          type="submit"
+          label={loading ? "Enviando..." : "Enviar código de recuperación"}
+          disabled={loading}
+        />
       </form>
     </Card>
   );

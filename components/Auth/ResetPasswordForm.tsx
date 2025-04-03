@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -17,6 +17,7 @@ export default function ResetPasswordForm() {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const searchParams = useSearchParams();
   const otpFromUrl = searchParams?.get('otp');
@@ -27,12 +28,25 @@ export default function ResetPasswordForm() {
 
   const validate = () => {
     const newErrors: typeof errors = {};
-    if (!email || !email.includes('@')) newErrors.email = 'Correo inválido';
-    if (!otp || otp.length !== 6) newErrors.otp = 'OTP inválido';
-    if (!newPassword || newPassword.length < 8)
+
+    if (!email || !/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Correo inválido';
+    if (!otp || otp.length !== 6) newErrors.otp = 'El código debe tener 6 dígitos';
+    
+    if (!newPassword || newPassword.length < 8) {
       newErrors.newPassword = 'Mínimo 8 caracteres';
-    if (newPassword !== confirmPassword)
-      newErrors.confirmPassword = 'No coinciden';
+    } else if (!/[A-Z]/.test(newPassword)) {
+      newErrors.newPassword = 'Debe tener una mayúscula';
+    } else if (!/[a-z]/.test(newPassword)) {
+      newErrors.newPassword = 'Debe tener una minúscula';
+    } else if (!/[0-9]/.test(newPassword)) {
+      newErrors.newPassword = 'Debe tener un número';
+    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(newPassword)) {
+      newErrors.newPassword = 'Debe tener un símbolo especial';
+    }
+
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -43,6 +57,7 @@ export default function ResetPasswordForm() {
     if (!validate()) return;
 
     try {
+      setLoading(true);
       const response = await apiClient.post('/reset-password', {
         email,
         otp,
@@ -51,14 +66,16 @@ export default function ResetPasswordForm() {
       });
 
       setSuccess(true);
-      setMessage(response.data?.data?.message || 'Contraseña actualizada');
+      setMessage(response.data?.data?.message || 'Contraseña actualizada con éxito');
       setTimeout(() => {
         window.location.href = '/login';
-      }, 3000);
+      }, 2500);
     } catch (error: any) {
       console.error('Error:', error.response?.data);
-      const msg = error.response?.data?.data?.error?.[0]?.message || 'Error al cambiar contraseña';
+      const msg = error.response?.data?.data?.error?.[0]?.message || 'Error al cambiar la contraseña';
       setMessage(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,7 +121,7 @@ export default function ResetPasswordForm() {
           icon={<FiLock />}
           error={errors.confirmPassword}
         />
-        <Button type="submit" label="Cambiar contraseña" />
+        <Button type="submit" label={loading ? "Guardando..." : "Cambiar contraseña"} disabled={loading} />
       </form>
 
       {message && (

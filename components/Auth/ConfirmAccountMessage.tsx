@@ -13,6 +13,7 @@ export default function ConfirmAccountMessage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; otp?: string }>({});
   const [success, setSuccess] = useState(false);
 
   const router = useRouter();
@@ -23,8 +24,25 @@ export default function ConfirmAccountMessage() {
     if (emailFromUrl) setEmail(emailFromUrl);
   }, [emailFromUrl]);
 
+  const validate = () => {
+    const newErrors: { email?: string; otp?: string } = {};
+
+    if (!email || !email.includes("@")) {
+      newErrors.email = "Correo inválido";
+    }
+
+    if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      newErrors.otp = "Código inválido (6 dígitos)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     try {
       const response = await apiClient.post("/confirm-account", { email, otp });
@@ -35,7 +53,8 @@ export default function ConfirmAccountMessage() {
       }, 1500);
     } catch (error: any) {
       console.error("Error al confirmar cuenta:", error.response?.data || error.message);
-      setMessage("Error al confirmar cuenta. Verifica tus datos.");
+      const backendMsg = error.response?.data?.data?.error?.[0]?.message;
+      setMessage(backendMsg || "Error al confirmar cuenta. Verifica tus datos.");
     }
   };
 
@@ -51,15 +70,23 @@ export default function ConfirmAccountMessage() {
           name="email"
           placeholder="Correo electrónico"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setErrors((prev) => ({ ...prev, email: "" }));
+          }}
           icon={<FiMail />}
+          error={errors.email}
         />
         <Input
           name="otp"
           placeholder="Código de verificación"
           value={otp}
-          onChange={(e) => setOtp(e.target.value)}
+          onChange={(e) => {
+            setOtp(e.target.value);
+            setErrors((prev) => ({ ...prev, otp: "" }));
+          }}
           icon={<FiKey />}
+          error={errors.otp}
         />
         <Button type="submit" label="Confirmar Cuenta" />
       </form>
