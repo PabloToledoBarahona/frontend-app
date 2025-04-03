@@ -16,7 +16,16 @@ export default function UploadCSV() {
   // Maneja la selección del archivo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+
+      // Validar que el archivo sea un CSV
+      if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith(".csv")) {
+        setMessage("Error: Solo se permiten archivos CSV.");
+        setFile(null);
+        return;
+      }
+
+      setFile(selectedFile);
       setMessage("");
     }
   };
@@ -38,9 +47,8 @@ export default function UploadCSV() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Asegúrate de que el backend devuelve el contenido del archivo como texto
       console.log("Archivo subido correctamente:", response.data);
-      setCsvContent(response.data.content); // Extrae el contenido del archivo CSV
+      setCsvContent(response.data.content);
       setMessage("Archivo subido con éxito.");
     } catch (error: any) {
       console.error("Error al subir el archivo:", error.response?.data || error.message);
@@ -53,7 +61,7 @@ export default function UploadCSV() {
   return (
     <Card>
       <Heading title="Subir Archivo CSV" subtitle="Selecciona un archivo CSV para procesarlo" center />
-      
+
       <form onSubmit={handleUpload} className="space-y-4">
         <div className="relative">
           {/* Ocultar el input original de tipo file */}
@@ -69,11 +77,11 @@ export default function UploadCSV() {
             htmlFor="file-upload"
             className="block text-gray-700 bg-blue-500 text-white px-6 py-2.5 text-sm font-semibold rounded-full shadow-md hover:opacity-90 transition cursor-pointer"
           >
-            {file ? file.name : "Seleccionar archivo CSV"} {/* Mostrar nombre del archivo si existe */}
+            {file ? file.name : "Seleccionar archivo CSV"}
           </label>
         </div>
 
-        <Button type="submit" label={loading ? "Subiendo..." : "Subir Archivo"} disabled={loading} />
+        <Button type="submit" label={loading ? "Subiendo..." : "Subir Archivo"} disabled={!file || loading} />
 
         {message && (
           <p
@@ -88,9 +96,7 @@ export default function UploadCSV() {
         {csvContent && (
           <div className="mt-4 p-2 bg-gray-100 border rounded">
             <h3 className="font-semibold">Contenido del CSV:</h3>
-            <pre className="text-xs whitespace-pre-wrap">
-              {csvContent} {/* Muestra el contenido del CSV */}
-            </pre>
+            <pre className="text-xs whitespace-pre-wrap">{csvContent}</pre>
           </div>
         )}
       </form>
