@@ -1,7 +1,8 @@
 "use client";
 
-import apiClient from '@/lib/apiClient';
+import { useRouter } from 'next/navigation';
 import { useState } from "react";
+import apiClient from '@/lib/apiClient';
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
@@ -9,6 +10,8 @@ import { Card } from "@/components/ui/Card";
 import { FiMail, FiLock } from "react-icons/fi";
 
 export default function LoginForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -48,7 +51,7 @@ export default function LoginForm() {
       const token = response.data?.data?.authToken;
 
       if (token) {
-        localStorage.setItem('authToken', token); 
+        localStorage.setItem('authToken', token);
         setSuccess(true);
       } else {
         setMessage("Token no recibido. Intenta de nuevo.");
@@ -70,7 +73,7 @@ export default function LoginForm() {
         <>
           <Heading title="¡Bienvenido!" subtitle="Inicio de sesión exitoso" center />
           <div className="flex justify-center mt-4">
-            <Button label="Ir a mis canales" onClick={() => window.location.href = "/channels"} />
+            <Button label="Ir a mis canales" onClick={() => router.push('/channels')} />
           </div>
         </>
       ) : (
