@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import apiClient from "@/lib/apiClient";
 import { Card } from "@/components/ui/Card";
@@ -9,15 +10,15 @@ import { Button } from "@/components/ui/Button";
 import { FiMail } from "react-icons/fi";
 
 export default function ForgotPasswordForm() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const validateEmail = (value: string) => {
-    return /\S+@\S+\.\S+/.test(value);
-  };
+  const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ export default function ForgotPasswordForm() {
         />
         <Button
           label="Restablecer contraseña"
-          onClick={() => (window.location.href = "/reset-password")}
+          onClick={() => router.push("/reset-password")} // ✅ sin recargar la página
         />
       </Card>
     );
