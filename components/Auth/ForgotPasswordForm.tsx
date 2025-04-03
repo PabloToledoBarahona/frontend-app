@@ -50,7 +50,7 @@ export default function ForgotPasswordForm() {
           subtitle={message}
           center
         />
-        <Button label="Volver al login" onClick={() => (window.location.href = "/login")} />
+        <Button label="Restablecer contraseña" onClick={() => (window.location.href = "/reset-password")} />
       </Card>
     );
   }
