@@ -103,7 +103,7 @@ export default function RegisterForm() {
         <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} icon={<FiLock />} error={errors.password} />
         <Input name="confirm_password" type="password" placeholder="Confirmar contraseña" value={formData.confirm_password || ""} onChange={handleChange} icon={<FiLock />} error={errors.confirm_password} />
         <Button type="submit" label="Registrarse" />
-        <div className="text-center text-sm text-white mt-4">
+        <div className="text-center text-sm text-gray-900 mt-4">
           ¿Ya tienes una cuenta?{" "}
           <a href="/login" className="text-blue-600 hover:underline">
             Inicia sesión
