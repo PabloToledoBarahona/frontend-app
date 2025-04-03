@@ -84,11 +84,11 @@ export default function LoginForm() {
           <div className="flex justify-center gap-4 mt-4 flex-col sm:flex-row">
             <Button
               label="Ir a mis canales"
-              onClick={() => (window.location.href = "/channels")}
+              onClick={() => router.push("/channels")}
             />
             <Button
               label="Cargar .CSV"
-              onClick={() => (window.location.href = "/excel")}
+              onClick={() => router.push("/excel")}
               variant="secondary"
             />
           </div>
