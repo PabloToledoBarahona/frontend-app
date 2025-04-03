@@ -12,6 +12,7 @@ import { FiHome } from 'react-icons/fi';
 interface Channel {
   _id: string;
   title: string;
+  description: string;
   createdAt: string;
 }
 
@@ -38,7 +39,6 @@ export default function ChannelList() {
   return (
     <>
       <Card>
-        {/* Ícono flotante de volver al home */}
         <button
           className="absolute top-4 left-4 text-gray-600 hover:text-black"
           onClick={() => router.push('/')}
@@ -61,6 +61,7 @@ export default function ChannelList() {
               className="border p-4 rounded-lg shadow-sm bg-gray-50 text-gray-900"
             >
               <strong>{ch.title}</strong>
+              <p className="text-sm text-gray-700">{ch.description}</p>
               <p className="text-xs text-gray-500">
                 Creado: {new Date(ch.createdAt).toLocaleDateString()}
               </p>
