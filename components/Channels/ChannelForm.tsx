@@ -12,7 +12,8 @@ interface Props {
 }
 
 export default function ChannelForm({ onSuccess }: Props) {
-  const [name, setName] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -21,19 +22,21 @@ export default function ChannelForm({ onSuccess }: Props) {
     setError('');
     setMessage('');
 
-    if (!name.trim()) {
-      setError('El nombre del canal es obligatorio');
+    if (!title.trim() || !description.trim()) {
+      setError('Completa todos los campos');
       return;
     }
 
     try {
       await apiClient.post('/channel/create', {
-        title: name,
-        description: 'Canal creado desde el frontend',
+        title,
+        description,
       });
+
       setMessage('Canal creado exitosamente');
-      setName('');
-      onSuccess(); 
+      setTitle('');
+      setDescription('');
+      onSuccess();
     } catch (err: any) {
       const msg =
         err.response?.data?.data?.error?.[0]?.message ||
@@ -44,13 +47,19 @@ export default function ChannelForm({ onSuccess }: Props) {
 
   return (
     <Card>
-      <Heading title="Crear canal" subtitle="Ingresa el nombre del canal" center />
+      <Heading title="Crear canal" subtitle="Ingresa los datos del canal" center />
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          name="name"
-          placeholder="Nombre del canal"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          name="title"
+          placeholder="Título del canal"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Input
+          name="description"
+          placeholder="Descripción"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <Button type="submit" label="Crear canal" />
       </form>
