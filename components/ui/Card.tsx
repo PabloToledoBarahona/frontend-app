@@ -1,9 +1,17 @@
-import React from 'react';
+import { ReactNode } from "react";
 
-export function Card({ children }: { children: React.ReactNode }) {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+export const Card = ({ children, className = "", ...props }: CardProps) => {
   return (
-    <div className="bg-[#1f2937] p-10 rounded-2xl shadow-2xl w-full max-w-md">
+    <div
+      className={`rounded-2xl bg-zinc-900 text-white p-6 ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );
-}
+};
