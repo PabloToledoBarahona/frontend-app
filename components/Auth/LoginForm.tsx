@@ -50,9 +50,6 @@ export default function LoginForm() {
       if (token) {
         localStorage.setItem('authToken', token); 
         setSuccess(true);
-        setTimeout(() => {
-          window.location.href = "/channels"; 
-        }, 1000);
       } else {
         setMessage("Token no recibido. Intenta de nuevo.");
       }
@@ -72,7 +69,9 @@ export default function LoginForm() {
       {success ? (
         <>
           <Heading title="¡Bienvenido!" subtitle="Inicio de sesión exitoso" center />
-          <Button label="Ir a mis canales" onClick={() => (window.location.href = "/channels")} />
+          <div className="flex justify-center mt-4">
+            <Button label="Ir a mis canales" onClick={() => window.location.href = "/channels"} />
+          </div>
         </>
       ) : (
         <>
