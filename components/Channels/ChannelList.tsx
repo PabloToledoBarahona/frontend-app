@@ -39,14 +39,6 @@ export default function ChannelList() {
   return (
     <>
       <Card>
-        <button
-          className="absolute top-4 left-4 text-gray-600 hover:text-black"
-          onClick={() => router.push('/')}
-          title="Volver al inicio"
-        >
-          <FiHome size={22} />
-        </button>
-
         <Heading title="Mis canales" subtitle="Canales creados por ti" center />
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
