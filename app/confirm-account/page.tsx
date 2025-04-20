@@ -1,8 +1,8 @@
-import ConfirmAccountMessage from '@/components/Auth/ConfirmAccountMessage';
+import ConfirmAccountMessage from "@/components/Auth/ConfirmAccountMessage";
 
 export default function ConfirmAccountPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-white px-4">
       <ConfirmAccountMessage />
     </main>
   );

@@ -1,55 +1,91 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Heading } from '@/components/ui/Heading';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { FiMail } from 'react-icons/fi';
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import apiClient from "@/lib/apiClient";
+import { Card } from "@/components/ui/Card";
+import { Heading } from "@/components/ui/Heading";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { FiMail } from "react-icons/fi";
 
 export default function ForgotPasswordForm() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [sent, setSent] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes('@')) {
-      setError('Correo inválido');
+    if (!email || !validateEmail(email)) {
+      setError("Correo inválido");
       return;
     }
 
-    setError('');
-    setTimeout(() => {
-      console.log('📩 Enviado link de recuperación a:', email);
+    try {
+      setError("");
+      setLoading(true);
+
+      const response = await apiClient.post("/auth/forgot-password", { email });
+
+      setMessage(response.data?.data?.message || "Revisa tu bandeja de entrada");
       setSent(true);
-    }, 1000);
+    } catch (err: any) {
+      console.error("Error:", err.response?.data || err.message);
+      const backendMsg = err.response?.data?.data?.error?.[0]?.message;
+      setError(backendMsg || "Ocurrió un error. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (sent) {
     return (
       <Card>
-        <Heading title="¡Revisa tu correo!" subtitle="Te enviamos un enlace para restablecer tu contraseña" center />
-        <Button label="Volver al login" onClick={() => (window.location.href = '/login')} />
+        <Heading
+          title="¡Revisa tu correo!"
+          subtitle={message}
+          center
+        />
+        <Button
+          label="Restablecer contraseña"
+          onClick={() => router.push("/reset-password")} // ✅ sin recargar la página
+        />
       </Card>
     );
   }
 
   return (
     <Card>
-      <Heading title="¿Olvidaste tu contraseña?" subtitle="Te ayudaremos a recuperarla" center />
+      <Heading
+        title="¿Olvidaste tu contraseña?"
+        subtitle="Te ayudaremos a recuperarla"
+        center
+      />
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           name="email"
           placeholder="Correo electrónico"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError("");
+          }}
           icon={<FiMail />}
           error={error}
         />
-        <Button type="submit" label="Enviar enlace de recuperación" />
+        <Button
+          type="submit"
+          label={loading ? "Enviando..." : "Enviar código de recuperación"}
+          disabled={loading}
+        />
       </form>
     </Card>
   );
