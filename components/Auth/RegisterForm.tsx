@@ -69,7 +69,9 @@ export default function RegisterForm() {
     const fetchStates = async () => {
       if (!formData.country_id) return;
       try {
-        const response = await apiClient.get(`/location/states/${formData.country_id}`);
+        const response = await apiClient.get(
+          `/location/states/${formData.country_id}`
+        );
         setStates(response.data.data);
         setCities([]);
         setFormData((prev) => ({ ...prev, state_id: "", city_id: "" }));
@@ -84,7 +86,9 @@ export default function RegisterForm() {
     const fetchCities = async () => {
       if (!formData.state_id) return;
       try {
-        const response = await apiClient.get(`/location/cities/${formData.state_id}`);
+        const response = await apiClient.get(
+          `/location/cities/${formData.state_id}`
+        );
         setCities(response.data.data);
         setFormData((prev) => ({ ...prev, city_id: "" }));
       } catch (error) {
@@ -122,7 +126,9 @@ export default function RegisterForm() {
       newErrors.password = "Debe incluir una minúscula";
     } else if (!/[0-9]/.test(formData.password)) {
       newErrors.password = "Debe incluir un número";
-    } else if (!/[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]/.test(formData.password)) {
+    } else if (
+      !/[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]/.test(formData.password)
+    ) {
       newErrors.password = "Debe incluir un carácter especial";
     }
 
@@ -134,7 +140,11 @@ export default function RegisterForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -153,12 +163,16 @@ export default function RegisterForm() {
 
       if (response.status === 200 || response.status === 201) {
         const { user_id } = response.data.data.user;
-        router.push(`/confirm-account?email=${formData.email}&user_id=${user_id}`);
+        router.push(
+          `/confirm-account?email=${formData.email}&user_id=${user_id}`
+        );
       } else {
         setMessage("Ocurrió un error inesperado.");
       }
     } catch (error: any) {
-      const msg = error.response?.data?.data?.error?.[0]?.message || "Error al registrar.";
+      const msg =
+        error.response?.data?.data?.error?.[0]?.message ||
+        "Error al registrar.";
       setMessage(msg);
     } finally {
       setLoading(false);
@@ -168,32 +182,82 @@ export default function RegisterForm() {
   return (
     <div className="max-w-xl mx-auto mt-10">
       <Card className="p-8 shadow-xl rounded-2xl bg-white space-y-6">
-        <Heading title="Registro de Usuario" subtitle="Crea tu cuenta para comenzar" center />
+        <Heading
+          title="Registro de Usuario"
+          subtitle="Crea tu cuenta para comenzar"
+          center
+        />
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input name="username" placeholder="Nombre de usuario" value={formData.username} onChange={handleChange} icon={<FiUser />} error={errors.username} />
-          <Input name="first_name" placeholder="Nombre" value={formData.first_name} onChange={handleChange} icon={<FiUser />} error={errors.first_name} />
-          <Input name="last_name" placeholder="Apellido" value={formData.last_name} onChange={handleChange} icon={<FiUser />} error={errors.last_name} />
-          <Input name="email" placeholder="Correo electrónico" value={formData.email} onChange={handleChange} icon={<FiMail />} error={errors.email} />
-          <Input name="phone_number" placeholder="Número de teléfono" value={formData.phone_number} onChange={handleChange} icon={<FiPhone />} error={errors.phone_number} />
+          <Input
+            name="username"
+            placeholder="Nombre de usuario"
+            value={formData.username}
+            onChange={handleChange}
+            icon={<FiUser />}
+            error={errors.username}
+          />
+          <Input
+            name="first_name"
+            placeholder="Nombre"
+            value={formData.first_name}
+            onChange={handleChange}
+            icon={<FiUser />}
+            error={errors.first_name}
+          />
+          <Input
+            name="last_name"
+            placeholder="Apellido"
+            value={formData.last_name}
+            onChange={handleChange}
+            icon={<FiUser />}
+            error={errors.last_name}
+          />
+          <Input
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            icon={<FiMail />}
+            error={errors.email}
+          />
+          <Input
+            name="phone_number"
+            placeholder="Número de teléfono"
+            value={formData.phone_number}
+            onChange={handleChange}
+            icon={<FiPhone />}
+            error={errors.phone_number}
+          />
 
           <div className="relative">
             <input
               type="date"
               name="date_of_birth"
+              aria-label="Fecha de nacimiento"
               value={formData.date_of_birth}
               onChange={handleChange}
               className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300"
             />
-            {errors.date_of_birth && <p className="text-sm text-red-600">{errors.date_of_birth}</p>}
+            {errors.date_of_birth && (
+              <p className="text-sm text-red-600">{errors.date_of_birth}</p>
+            )}
           </div>
 
-          <select name="gender" value={formData.gender} onChange={handleChange} className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300">
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            aria-label="Género"
+            className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300"
+          >
             <option value="">Selecciona género</option>
             <option value="female">Femenino</option>
             <option value="male">Masculino</option>
             <option value="other">Otro</option>
           </select>
-          {errors.gender && <p className="text-sm text-red-600">{errors.gender}</p>}
+          {errors.gender && (
+            <p className="text-sm text-red-600">{errors.gender}</p>
+          )}
 
           <textarea
             name="bio"
@@ -205,39 +269,93 @@ export default function RegisterForm() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select name="country_id" value={formData.country_id} onChange={handleChange} className="p-3 rounded-lg bg-gray-50 border border-gray-300">
+            <select
+              name="country_id"
+              value={formData.country_id}
+              onChange={handleChange}
+              aria-label="País"
+              className="p-3 rounded-lg bg-gray-50 border border-gray-300"
+            >
               <option value="">País</option>
               {countries.map((c) => (
-                <option key={c._id} value={c._id}>{c.name}</option>
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
               ))}
             </select>
 
-            <select name="state_id" value={formData.state_id} onChange={handleChange} className="p-3 rounded-lg bg-gray-50 border border-gray-300" disabled={!states.length}>
+            <select
+              name="state_id"
+              value={formData.state_id}
+              onChange={handleChange}
+              disabled={!states.length}
+              aria-label="Departamento"
+              className="p-3 rounded-lg bg-gray-50 border border-gray-300"
+            >
               <option value="">Departamento</option>
               {states.map((s) => (
-                <option key={s._id} value={s._id}>{s.name}</option>
+                <option key={s._id} value={s._id}>
+                  {s.name}
+                </option>
               ))}
             </select>
 
-            <select name="city_id" value={formData.city_id} onChange={handleChange} className="p-3 rounded-lg bg-gray-50 border border-gray-300" disabled={!cities.length}>
+            <select
+              name="city_id"
+              value={formData.city_id}
+              onChange={handleChange}
+              disabled={!cities.length}
+              aria-label="Ciudad"
+              className="p-3 rounded-lg bg-gray-50 border border-gray-300"
+            >
               <option value="">Ciudad</option>
               {cities.map((c) => (
-                <option key={c._id} value={c._id}>{c.name}</option>
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
-          {errors.city_id && <p className="text-sm text-red-600">{errors.city_id}</p>}
+          {errors.city_id && (
+            <p className="text-sm text-red-600">{errors.city_id}</p>
+          )}
 
-          <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} icon={<FiLock />} error={errors.password} />
-          <Input name="confirm_password" type="password" placeholder="Confirmar contraseña" value={formData.confirm_password} onChange={handleChange} icon={<FiLock />} error={errors.confirm_password} />
+          <Input
+            name="password"
+            type="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            icon={<FiLock />}
+            error={errors.password}
+          />
+          <Input
+            name="confirm_password"
+            type="password"
+            placeholder="Confirmar contraseña"
+            value={formData.confirm_password}
+            onChange={handleChange}
+            icon={<FiLock />}
+            error={errors.confirm_password}
+          />
 
-          <Button type="submit" label={loading ? "Registrando..." : "Registrarse"} disabled={loading} className="w-full" />
-          {message && <p className="text-sm text-center mt-2 text-red-600">{message}</p>}
+          <Button
+            type="submit"
+            label={loading ? "Registrando..." : "Registrarse"}
+            disabled={loading}
+            className="w-full"
+          />
+          {message && (
+            <p className="text-sm text-center mt-2 text-red-600">{message}</p>
+          )}
         </form>
 
         <p className="text-center text-sm text-gray-600">
           ¿Ya tienes una cuenta?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline font-semibold">
+          <Link
+            href="/login"
+            className="text-blue-600 hover:underline font-semibold"
+          >
             Inicia sesión
           </Link>
         </p>
