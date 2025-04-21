@@ -32,7 +32,7 @@ export default function ForgotPasswordForm() {
       setError("");
       setLoading(true);
 
-      const response = await apiClient.post("/auth/forgot-password", { email });
+      const response = await apiClient.post("/auth/password/forgot", { email });
 
       setMessage(response.data?.data?.message || "Revisa tu bandeja de entrada");
       setSent(true);

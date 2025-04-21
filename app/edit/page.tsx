@@ -51,8 +51,27 @@ export default function EditProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiClient.get('/users/me');
-        const user = res.data.data.user;
+        const userRes = await apiClient.get('/users/me');
+        const user = userRes.data.data.user;
+
+        const countriesRes = await apiClient.get('/location/countries');
+        setCountries(countriesRes.data.data);
+
+        let fetchedStates = [];
+        let fetchedCities = [];
+
+        if (user.location?.country_id) {
+          const statesRes = await apiClient.get(`/location/states/${user.location.country_id}`);
+          fetchedStates = statesRes.data.data;
+          setStates(fetchedStates);
+        }
+
+        if (user.location?.state_id) {
+          const citiesRes = await apiClient.get(`/location/cities/${user.location.state_id}`);
+          fetchedCities = citiesRes.data.data;
+          setCities(fetchedCities);
+        }
+
         setFormData({
           username: user.username || '',
           first_name: user.first_name || '',
@@ -61,21 +80,12 @@ export default function EditProfilePage() {
           gender: user.gender || '',
           bio: user.bio || '',
           phone_number: user.phone_number || '',
-          location: user.location || { country_id: '', state_id: '', city_id: '' },
+          location: {
+            country_id: user.location?.country_id || '',
+            state_id: user.location?.state_id || '',
+            city_id: user.location?.city_id || '',
+          },
         });
-
-        const countriesRes = await apiClient.get('/location/countries');
-        setCountries(countriesRes.data.data);
-
-        if (user.location?.country_id) {
-          const statesRes = await apiClient.get(`/location/states/${user.location.country_id}`);
-          setStates(statesRes.data.data);
-        }
-
-        if (user.location?.state_id) {
-          const citiesRes = await apiClient.get(`/location/cities/${user.location.state_id}`);
-          setCities(citiesRes.data.data);
-        }
       } catch (err) {
         console.error(err);
         setMessage('Error al obtener los datos del perfil');
@@ -129,7 +139,6 @@ export default function EditProfilePage() {
           },
         }));
       }
-
     } else {
       setFormData((prev) => ({
         ...prev,
