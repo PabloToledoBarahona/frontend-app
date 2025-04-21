@@ -15,8 +15,17 @@ export default function UploadCSV() {
   const [csvContent, setCsvContent] = useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    const selectedFile = e.target.files ? e.target.files[0] : null;
+    
+    if (selectedFile) {
+      // Verificar si el archivo tiene la extensión .csv
+      if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith(".csv")) {
+        setMessage("Solo se permiten archivos CSV.");
+        setFile(null);
+        return;
+      }
+
+      setFile(selectedFile);
       setMessage("");
     }
   };
@@ -77,9 +86,7 @@ export default function UploadCSV() {
 
         {message && (
           <p
-            className={`text-sm text-center mt-2 ${
-              message === "Archivo subido con éxito." ? "text-green-600" : "text-red-600"
-            }`}
+            className={`text-sm text-center mt-2 ${message === "Archivo subido con éxito." ? "text-green-600" : "text-red-600"}`}
           >
             {message}
           </p>

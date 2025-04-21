@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 import apiClient from "@/lib/apiClient";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -9,19 +9,14 @@ import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
 import { FiMail, FiLock } from "react-icons/fi";
 
-export default function LoginForm() {
-  const router = useRouter();
+interface LoginFormProps {
+  onSuccess: () => void;
+}
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  );
+export default function LoginForm({ onSuccess }: LoginFormProps) {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const validate = () => {
@@ -49,20 +44,15 @@ export default function LoginForm() {
     try {
       setLoading(true);
       const response = await apiClient.post("/auth/sign-in", formData);
-
       const token = response.data?.data?.authToken;
 
       if (token) {
         localStorage.setItem("authToken", token);
-        setSuccess(true);
+        onSuccess();
       } else {
         setMessage("Token no recibido. Intenta de nuevo.");
       }
     } catch (error: any) {
-      console.error(
-        "Error al iniciar sesión:",
-        error.response?.data || error.message
-      );
       const backendMsg =
         error.response?.data?.data?.error?.[0]?.message ||
         "Credenciales incorrectas";
@@ -73,79 +63,53 @@ export default function LoginForm() {
   };
 
   return (
-    <Card>
-      {success ? (
-        <>
-          <Heading
-            title="¡Bienvenido!"
-            subtitle="Inicio de sesión exitoso"
-            center
-          />
-          <div className="flex justify-center gap-4 mt-4 flex-col sm:flex-row">
-            <Button
-              label="Ir a mis canales"
-              onClick={() => router.push("/channels")}
-            />
-            <Button
-              label="Cargar .CSV"
-              onClick={() => router.push("/excel")}
-              variant="secondary"
-            />
-          </div>
-        </>
-      ) : (
-        <>
-          <Heading
-            title="Iniciar Sesión"
-            subtitle="Ingresa tus credenciales"
-            center
-          />
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              name="email"
-              placeholder="Correo electrónico"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              icon={<FiMail />}
-              error={errors.email}
-            />
-            <Input
-              name="password"
-              placeholder="Contraseña"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              icon={<FiLock />}
-              error={errors.password}
-            />
-            <Button
-              type="submit"
-              label={loading ? "Ingresando..." : "Iniciar Sesión"}
-              disabled={loading}
-            />
-            {message && (
-              <p className="text-sm text-center mt-2 text-red-600">{message}</p>
-            )}
-            <div className="flex justify-between text-sm text-gray-600 mt-4">
-              <button
-                type="button"
-                onClick={() => router.push("/forgot-password")}
-                className="hover:underline text-blue-600"
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push("/register")}
-                className="hover:underline text-blue-600"
-              >
-                Crear cuenta
-              </button>
-            </div>
-          </form>
-        </>
-      )}
+    <Card className="p-8 shadow-lg rounded-xl bg-white w-full max-w-md mx-auto">
+      <Heading
+        title="Iniciar Sesión"
+        subtitle="Ingresa tus credenciales para acceder"
+        center
+      />
+      <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+        <Input
+          name="email"
+          placeholder="Correo electrónico"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          icon={<FiMail />}
+          error={errors.email}
+        />
+        <Input
+          name="password"
+          placeholder="Contraseña"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          icon={<FiLock />}
+          error={errors.password}
+        />
+        <div className="text-sm text-right">
+          <Link href="/forgot-password" className="text-blue-600 hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+        <Button
+          type="submit"
+          label={loading ? "Ingresando..." : "Iniciar Sesión"}
+          disabled={loading}
+          className="w-full"
+        />
+        {message && (
+          <p className="text-sm text-center mt-2 text-red-600">{message}</p>
+        )}
+      </form>
+
+      <div className="text-center mt-6 text-sm">
+        ¿No tienes cuenta?{" "}
+        <Link href="/register" className="text-blue-600 hover:underline">
+          Regístrate
+        </Link>
+      </div>
     </Card>
   );
 }
