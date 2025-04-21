@@ -31,7 +31,7 @@ export default function ResetPasswordForm() {
 
     if (!email || !/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Correo inválido';
     if (!otp || otp.length !== 6) newErrors.otp = 'El código debe tener 6 dígitos';
-    
+
     if (!newPassword || newPassword.length < 8) {
       newErrors.newPassword = 'Mínimo 8 caracteres';
     } else if (!/[A-Z]/.test(newPassword)) {
@@ -58,11 +58,11 @@ export default function ResetPasswordForm() {
 
     try {
       setLoading(true);
-      const response = await apiClient.post('/auth/reset-password', {
+      const response = await apiClient.post('/auth/password/reset', {
         email,
         otp,
-        newPassword,
-        confirmPassword,
+        new_password: newPassword,
+        confirm_password: confirmPassword,
       });
 
       setSuccess(true);
