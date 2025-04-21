@@ -12,6 +12,7 @@ import { FiMail, FiKey } from "react-icons/fi";
 export default function ConfirmAccountMessage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [userId, setUserId] = useState<string | null>(null); // Nueva variable para user_id
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<{ email?: string; otp?: string }>({});
   const [success, setSuccess] = useState(false);
@@ -19,10 +20,12 @@ export default function ConfirmAccountMessage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams?.get("email");
+  const userIdFromUrl = searchParams?.get("user_id"); // Obtener user_id desde la URL
 
   useEffect(() => {
     if (emailFromUrl) setEmail(emailFromUrl);
-  }, [emailFromUrl]);
+    if (userIdFromUrl) setUserId(userIdFromUrl); // Setear el user_id desde la URL
+  }, [emailFromUrl, userIdFromUrl]);
 
   const validate = () => {
     const newErrors: { email?: string; otp?: string } = {};
@@ -44,8 +47,19 @@ export default function ConfirmAccountMessage() {
 
     if (!validate()) return;
 
+    // Verificar que userId y email estén disponibles antes de enviar la solicitud
+    if (!userId) {
+      setMessage("Faltan parámetros para confirmar la cuenta.");
+      return;
+    }
+
     try {
-      const response = await apiClient.post("/auth/confirm-account", { email, otp });
+      const response = await apiClient.post("/auth/sign-up/confirm", { 
+        user_id: userId, 
+        email, 
+        otp 
+      });
+
       setMessage(response.data?.message || "Cuenta confirmada");
       setSuccess(true);
       setTimeout(() => {
