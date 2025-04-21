@@ -14,6 +14,12 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');

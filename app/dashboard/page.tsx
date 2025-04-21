@@ -3,7 +3,7 @@
 import Sidebar from '@/components/ui/Sidebar';
 import { useRouter } from 'next/navigation';
 import { FiLogOut } from 'react-icons/fi';
-
+import { useEffect } from 'react';
 
 export default function ChannelsPage() {
   const router = useRouter();
@@ -12,6 +12,15 @@ export default function ChannelsPage() {
     localStorage.removeItem('authToken');
     router.push('/');
   };
+
+  useEffect(() => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        router.push("/");
+      }
+    }, [router]);
+
+  
 
   return (
     <main className="min-h-screen flex bg-gray-100 ml-64"> {/* ml-64 por el sidebar */}

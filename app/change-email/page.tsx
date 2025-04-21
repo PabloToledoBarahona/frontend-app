@@ -25,6 +25,12 @@ export default function EditProfilePage() {
       city_id: '',
     }
   });
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
   const [message, setMessage] = useState('');
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
