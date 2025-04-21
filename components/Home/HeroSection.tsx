@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import Illustration from "@/public/landing-illustration.png";
+import Illustration from "../../../public/landing-illustration.png";
 
 export default function HeroSection() {
   return (
