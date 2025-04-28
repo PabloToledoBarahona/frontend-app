@@ -16,59 +16,53 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-64 h-screen bg-gray-800 text-white z-10">
-      <Card className="h-full flex flex-col justify-between p-4">
-        <div>
-          <div className="text-xl font-bold mb-8 text-center text-gray-200">
-            <Link href="/dashboard">
-              <Heading title="Te Lo Cobro" subtitle="" center />
-            </Link>
-          </div>
-
-          <ul className="space-y-4">
-            <li>
-              <Link
-                href="/profile"
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700"
-              >
-                <FiUser className="text-lg" />
-                <span>Perfil</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/excel"
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700"
-              >
-                <FiUpload className="text-lg" />
-                <span>Subir Archivos</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#"
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700"
-              >
-                <FiClock className="text-lg" />
-                <span>Próximamente</span>
-              </Link>
-            </li>
-            <li>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700 text-left"
-              >
-                <FiLogOut className="text-lg" />
-                <span>Cerrar sesión</span>
-              </button>
-            </li>
-          </ul>
+    <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col justify-between z-20">
+      <div className="p-6">
+        {/* Logo */}
+        <div className="mb-10 text-center">
+          <Link href="/dashboard">
+            <Heading title="TeLoCobro" subtitle="" center />
+          </Link>
         </div>
 
-        <div className="text-center text-sm text-gray-400 mt-8">
-          <p>&copy; 2025 Te Lo Cobro</p>
-        </div>
-      </Card>
-    </div>
+        {/* Navegación */}
+        <nav className="flex flex-col gap-4">
+          <Link
+            href="/profile"
+            className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-3 rounded-lg transition"
+          >
+            <FiUser />
+            <span className="text-sm font-medium">Perfil</span>
+          </Link>
+          <Link
+            href="/excel"
+            className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-3 rounded-lg transition"
+          >
+            <FiUpload />
+            <span className="text-sm font-medium">Subir Archivos</span>
+          </Link>
+          <Link
+            href="#"
+            className="flex items-center gap-3 text-gray-400 p-3 rounded-lg cursor-not-allowed"
+          >
+            <FiClock />
+            <span className="text-sm font-medium">Próximamente</span>
+          </Link>
+        </nav>
+      </div>
+
+      {/* Botón de Logout y Footer */}
+      <div className="p-6 space-y-6">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-red-500 hover:bg-red-50 p-3 rounded-lg w-full transition font-medium text-sm"
+        >
+          <FiLogOut />
+          Cerrar sesión
+        </button>
+
+        <p className="text-center text-xs text-gray-400">&copy; 2025 TeLoCobro</p>
+      </div>
+    </aside>
   );
 }

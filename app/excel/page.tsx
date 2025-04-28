@@ -28,15 +28,6 @@ export default function UploadCSVPage() {
 
       {/* Contenido principal */}
       <div className="flex-1 p-8 relative">
-        {/* Icono de logout en la esquina superior derecha */}
-        <button
-          onClick={handleLogout}
-          title="Cerrar sesión"
-          className="absolute top-4 right-4 text-gray-600 hover:text-black transition"
-        >
-          <FiLogOut size={22} />
-        </button>
-
         {/* Componente de carga de CSV */}
         <UploadCSV />
       </div>
