@@ -1,104 +1,68 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { Heading } from "@/components/ui/Heading";
-import { Card } from "@/components/ui/Card";
-import apiClient from "@/lib/apiClient";
-import { FiUpload } from "react-icons/fi";
+import { useState } from 'react';
+import Sidebar from '@/components/ui/Sidebar';
+import { FileDropzone } from '@/components/Excel/FileDropzone';
+import { UploadStatus } from '@/components/Excel/UploadStatus';
+import { CSVContentViewer } from '@/components/Excel/CSVContentPreview';
+import { Card } from '@/components/ui/Card';
+import { Heading } from '@/components/ui/Heading';
+import apiClient from '@/lib/apiClient';
 
-export default function UploadCSV() {
+export default function UploadCSVPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [csvContent, setCsvContent] = useState<string>("");
+  const [csvContent, setCsvContent] = useState<string>('');
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files ? e.target.files[0] : null;
-    
-    if (selectedFile) {
-      // Verificar si el archivo tiene la extensión .csv
-      if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith(".csv")) {
-        setMessage("Solo se permiten archivos CSV.");
-        setFile(null);
-        return;
-      }
-
-      setFile(selectedFile);
-      setMessage("");
-    }
-  };
-
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpload = async () => {
     if (!file) {
-      setMessage("Por favor, selecciona un archivo CSV.");
+      setMessage('Por favor, selecciona un archivo CSV.');
       return;
     }
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     try {
       setLoading(true);
-      const response = await apiClient.post("/test/read-csv", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await apiClient.post('/test/read-csv', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       setCsvContent(response.data.content);
-      setMessage("Archivo subido con éxito.");
+      setMessage('Archivo subido con éxito.');
     } catch (error: any) {
-      console.error("Error al subir el archivo:", error.response?.data || error.message);
-      setMessage("Error al subir el archivo.");
+      console.error('Error al subir el archivo:', error.response?.data || error.message);
+      setMessage('Error al subir el archivo.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card>
-      <Heading title="Subir Archivo CSV" subtitle="Selecciona un archivo CSV para procesarlo" center />
+    <main className="min-h-screen flex bg-gray-50 ml-64">
+      <Sidebar />
 
-      <form onSubmit={handleUpload} className="space-y-6 mt-4">
-        <div className="relative w-full">
-          <input
-            type="file"
-            accept=".csv"
-            id="file-upload"
-            onChange={handleFileChange}
-            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
-          />
-          <label
-            htmlFor="file-upload"
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 text-sm font-semibold rounded-full shadow-md hover:opacity-90 transition cursor-pointer"
-          >
-            <FiUpload />
-            {file ? file.name : "Seleccionar archivo CSV"}
-          </label>
-        </div>
+      <div className="flex-1 p-8 flex items-center justify-center">
+        <Card className="w-full max-w-4xl p-8 bg-white rounded-3xl shadow-2xl">
+          <Heading title="Sube tu archivo CSV" subtitle="Selecciona o arrastra un archivo CSV para analizarlo." center />
 
-        <Button
-          type="submit"
-          label={loading ? "Subiendo..." : "Subir Archivo"}
-          disabled={loading}
-        />
-
-        {message && (
-          <p
-            className={`text-sm text-center mt-2 ${message === "Archivo subido con éxito." ? "text-green-600" : "text-red-600"}`}
-          >
-            {message}
-          </p>
-        )}
-
-        {csvContent && (
-          <div className="mt-6 p-4 bg-gray-100 border rounded shadow-inner max-h-[300px] overflow-auto">
-            <h3 className="font-semibold mb-2 text-sm text-gray-700">Contenido del CSV:</h3>
-            <pre className="text-xs whitespace-pre-wrap text-gray-800">{csvContent}</pre>
+          <div className="mt-8">
+            <FileDropzone file={file} setFile={setFile} loading={loading} onUpload={handleUpload} />
           </div>
-        )}
-      </form>
-    </Card>
+
+          <div className="mt-6">
+            <UploadStatus message={message} />
+          </div>
+
+          {csvContent && (
+            <div className="mt-6">
+              <CSVContentViewer content={csvContent} />
+            </div>
+          )}
+        </Card>
+      </div>
+    </main>
   );
 }
