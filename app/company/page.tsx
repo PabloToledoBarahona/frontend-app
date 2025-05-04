@@ -1,37 +1,96 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Alert } from '@heroui/react';
-import { Button } from '@/components/ui/Button';
-import { CompanyCard } from '@/components/Company/CompanyCard';
-import Sidebar from '@/components/ui/Sidebar';
-import { Heading } from '@/components/ui/Heading';
-import apiClient from '@/lib/apiClient';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Alert } from "@heroui/react";
+import { Button } from "@/components/ui/Button";
+import { CompanyCard } from "@/components/Company/CompanyCard";
+import Sidebar from "@/components/ui/Sidebar";
+import { Heading } from "@/components/ui/Heading";
+import apiClient from "@/lib/apiClient";
+import axios from "axios";
+
+interface Channel {
+  _id: string;
+  createdAt: string;
+  status: "active" | "inactive";
+}
 
 export default function CompanyPage() {
   const router = useRouter();
   const [company, setCompany] = useState(null);
-  const [error, setError] = useState('');
+  const [channel, setChannel] = useState<Channel | null>(null);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [locationDetails, setLocationDetails] = useState({});
 
   useEffect(() => {
-    const fetchCompany = async () => {
+    const fetchCompanyAndChannel = async () => {
       try {
-        const res = await apiClient.get('/company/me');
-        setCompany(res.data.data);
+        // 1. Obtener compañía
+        const resCompany = await apiClient.get("/company/me");
+        const comp = resCompany.data.data;
+        setCompany(comp);
+
+        // 2. Ubicación
+        try {
+          if (comp.city_id) {
+            const cityRes = await apiClient.get(
+              `/location/cities/${comp.city_id}`
+            );
+            const city = cityRes.data.data;
+
+            if (city?.state_id) {
+              const stateRes = await apiClient.get(
+                `/location/states/${city.state_id}`
+              );
+              const state = stateRes.data.data;
+              console.log("STATE", state);
+
+              if (state?.country_id) {
+                const countryRes = await apiClient.get(
+                  `/location/countries/${state.country_id}`
+                );
+                const country = countryRes.data.data;
+
+                setLocationDetails({
+                  city: city.name,
+                  state: state.name,
+                  country: country.name,
+                });
+              } else {
+                console.warn("No se encontró country_id en el estado:", state);
+              }
+            } else {
+              console.warn("No se encontró state_id en la ciudad:", city);
+            }
+          }
+        } catch (locationErr) {
+          console.error("Error al cargar la ubicación:", locationErr);
+        }
+
+        // 3. Canal
+        try {
+          const resChannel = await apiClient.get("/channel/my-channel");
+          const foundChannel = resChannel.data?.data;
+          setChannel(foundChannel);
+        } catch (err) {
+          if (axios.isAxiosError(err) && err.response?.status !== 404) {
+            setError("Error al cargar el canal.");
+          }
+        }
       } catch (err: any) {
-        if (err.response?.status === 404) {
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
           setCompany(null);
         } else {
-          setError('No se pudo cargar la información de la compañía.');
+          setError("No se pudo cargar la información de la compañía.");
         }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCompany();
+    fetchCompanyAndChannel();
   }, []);
 
   return (
@@ -42,16 +101,24 @@ export default function CompanyPage() {
           <Heading title="Mi Compañía" />
 
           {loading && (
-            <p className="text-gray-600 mt-8 text-center">Cargando información...</p>
+            <p className="text-gray-600 mt-8 text-center">
+              Cargando información...
+            </p>
           )}
 
-          {!loading && error && (
+          {!loading && error && !company && !channel && (
             <div className="mt-8">
               <Alert
                 color="danger"
                 title="Ocurrió un error"
                 description={error}
               />
+            </div>
+          )}
+
+          {!loading && company && channel === null && (
+            <div className="bg-white p-6 rounded-2xl shadow-md border text-center text-sm text-gray-500">
+              No hay ningún canal asociado aún.
             </div>
           )}
 
@@ -68,14 +135,37 @@ export default function CompanyPage() {
               <Button
                 label="Registrar Compañía"
                 className="w-full max-w-xs"
-                onClick={() => router.push('/company/register')}
+                onClick={() => router.push("/company/register")}
               />
             </div>
           )}
 
           {!loading && company && (
-            <div className="mt-10">
-              <CompanyCard company={company} />
+            <div className="mt-10 space-y-6">
+              <CompanyCard
+                company={company}
+                locationDetails={locationDetails}
+              />
+
+              {channel && (
+                <div className="bg-white p-6 rounded-2xl shadow-md border space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Canal asociado a esta empresa
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Creado: {new Date(channel.createdAt).toLocaleDateString()}
+                  </p>
+                  <span
+                    className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
+                      channel.status === "active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {channel.status === "active" ? "Activo" : "Inactivo"}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
