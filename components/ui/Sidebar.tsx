@@ -4,14 +4,23 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
-import { FiUpload, FiUser, FiClock, FiLogOut } from "react-icons/fi";
+import {
+  FiUpload,
+  FiUser,
+  FiClock,
+  FiLogOut,
+  FiBriefcase,
+} from "react-icons/fi";
 import { Heading } from "./Heading";
 
 export default function Sidebar() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
+  const handleLogout = async () => {
+    await fetch("http://localhost:3000/api/v1/auth/sign-out", {
+      method: "POST",
+      credentials: "include",
+    });
     router.push("/");
   };
 
@@ -34,6 +43,16 @@ export default function Sidebar() {
             <FiUser />
             <span className="text-sm font-medium">Perfil</span>
           </Link>
+
+          {/* NUEVO ENLACE: Compañía */}
+          <Link
+            href="/company"
+            className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-3 rounded-lg transition"
+          >
+            <FiBriefcase />
+            <span className="text-sm font-medium">Compañía</span>
+          </Link>
+
           <Link
             href="/excel"
             className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-3 rounded-lg transition"
@@ -41,6 +60,7 @@ export default function Sidebar() {
             <FiUpload />
             <span className="text-sm font-medium">Subir Archivos</span>
           </Link>
+
           <Link
             href="#"
             className="flex items-center gap-3 text-gray-400 p-3 rounded-lg cursor-not-allowed"
@@ -61,7 +81,9 @@ export default function Sidebar() {
           Cerrar sesión
         </button>
 
-        <p className="text-center text-xs text-gray-400">&copy; 2025 TeLoCobro</p>
+        <p className="text-center text-xs text-gray-400">
+          &copy; 2025 TeLoCobro
+        </p>
       </div>
     </aside>
   );

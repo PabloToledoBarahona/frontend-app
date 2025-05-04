@@ -15,7 +15,9 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -44,14 +46,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     try {
       setLoading(true);
       const response = await apiClient.post("/auth/sign-in", formData);
-      const token = response.data?.data?.authToken;
-
-      if (token) {
-        localStorage.setItem("authToken", token);
+      if (response.status === 200) {
         onSuccess();
       } else {
-        setMessage("Token no recibido. Intenta de nuevo.");
+        setMessage("Inicio de sesión fallido.");
       }
+
     } catch (error: any) {
       const backendMsg =
         error.response?.data?.data?.error?.[0]?.message ||
@@ -89,7 +89,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           error={errors.password}
         />
         <div className="text-sm text-right">
-          <Link href="/forgot-password" className="text-blue-600 hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-blue-600 hover:underline"
+          >
             ¿Olvidaste tu contraseña?
           </Link>
         </div>

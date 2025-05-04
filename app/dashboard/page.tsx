@@ -4,21 +4,29 @@ import Sidebar from '@/components/ui/Sidebar';
 import { useRouter } from 'next/navigation';
 import { FiLogOut } from 'react-icons/fi';
 import { useEffect } from 'react';
+import { checkAuth } from '@/lib/checkAuth';
 
 export default function ChannelsPage() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    router.push('/');
+  const handleLogout = async () => {
+    await fetch("http://localhost:3000/api/v1/auth/sign-out", {
+      method: "POST",
+      credentials: "include", 
+    });
+    router.push("/");
   };
 
   useEffect(() => {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
+    const validateAuth = async () => {
+      const auth = await checkAuth();
+      if (!auth) {
         router.push("/");
       }
-    }, [router]);
+    };
+  
+    validateAuth();
+  }, [router]);
 
   
 

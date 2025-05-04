@@ -7,7 +7,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLoginSuccess = () => {
-    router.push("/excel");
+    router.push("/profile");
   };
 
   return (
