@@ -71,7 +71,7 @@ export default function CompanyPage() {
 
         // 3. Canal
         try {
-          const resChannel = await apiClient.get("/channel/my-channel");
+          const resChannel = await apiClient.get("/channel/me");
           const foundChannel = resChannel.data?.data;
           setChannel(foundChannel);
         } catch (err) {
