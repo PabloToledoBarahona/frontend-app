@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import apiClient from "@/lib/apiClient";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -9,33 +9,46 @@ import { useRouter } from "next/navigation";
 import { addToast } from "@heroui/react";
 
 interface FormData {
-    name: string;
-    legal_name: string;
-    nit: string;
-    description: string;
-    location: {
-      country_id: string;
-      state_id: string;
-      city_id: string;
-    };
-  }
+  name: string;
+  legal_name: string;
+  nit: string;
+  description: string;
+  location: {
+    country_id: string;
+    state_id: string;
+    city_id: string;
+  };
+}
 
-export function CompanyForm() {
+interface CompanyFormProps {
+  initialData?: FormData;
+  mode?: "create" | "edit";
+}
+
+export function CompanyForm({ initialData, mode = "create" }: CompanyFormProps) {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    legal_name: '',
-    nit: '',
-    description: '',
-    location: {
-      country_id: '',
-      state_id: '',
-      city_id: '',
-    },
-  });
+  const [formData, setFormData] = useState<FormData>(
+    initialData || {
+      name: '',
+      legal_name: '',
+      nit: '',
+      description: '',
+      location: {
+        country_id: '',
+        state_id: '',
+        city_id: '',
+      },
+    }
+  );
 
   const [errors, setErrors] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -57,6 +70,9 @@ export function CompanyForm() {
   const validate = (): boolean => {
     const newErrors: Record<string, any> = {};
     if (!formData.name.trim()) newErrors.name = "Nombre requerido";
+    if (!formData.legal_name.trim()) newErrors.legal_name = "Razón social requerida";
+    if (!formData.nit.trim()) newErrors.nit = "NIT requerido";
+    if (!formData.description.trim()) newErrors.description = "Descripción requerida";
     if (!formData.location.country_id) newErrors.country_id = "País requerido";
     if (!formData.location.state_id) newErrors.state_id = "Estado requerido";
     if (!formData.location.city_id) newErrors.city_id = "Ciudad requerida";
@@ -71,7 +87,6 @@ export function CompanyForm() {
     if (!validate()) return;
 
     try {
-      console.log("Enviando datos:", formData);
       const payload = {
         name: formData.name,
         legal_name: formData.legal_name,
@@ -80,19 +95,31 @@ export function CompanyForm() {
         city_id: formData.location.city_id,
       };
 
-      await apiClient.post("/company", payload);
-
-      addToast({
-        title: "¡Compañía creada!",
-        description: "Tu compañía fue registrada exitosamente.",
-        color: "success",
-      });
+      if (mode === "edit") {
+        await apiClient.put("/company", payload);
+        addToast({
+          title: "¡Compañía actualizada!",
+          description: "Tu compañía fue actualizada exitosamente.",
+          color: "success",
+        });
+      } else {
+        await apiClient.post("/company", payload);
+        addToast({
+          title: "¡Compañía creada!",
+          description: "Tu compañía fue registrada exitosamente.",
+          color: "success",
+        });
+      }
 
       router.push("/company");
     } catch (err: any) {
       console.error(err);
       const msg =
-        err?.response?.data?.message || "Error al registrar la compañía";
+        err?.response?.data?.message ||
+        (mode === "edit"
+          ? "Error al actualizar la compañía"
+          : "Error al registrar la compañía");
+
       addToast({
         title: "Error",
         description: msg,
@@ -114,21 +141,21 @@ export function CompanyForm() {
         error={errors.name}
       />
 
-        <Input
+      <Input
         name="legal_name"
         placeholder="Razón social"
         value={formData.legal_name}
         onChange={handleChange}
         error={errors.legal_name}
-        />
+      />
 
-        <Input
+      <Input
         name="nit"
         placeholder="NIT"
         value={formData.nit}
         onChange={handleChange}
         error={errors.nit}
-        />
+      />
 
       <textarea
         name="description"
@@ -138,6 +165,9 @@ export function CompanyForm() {
         onChange={handleChange}
         className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
+      {errors.description && (
+        <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+      )}
 
       <LocationSelector
         location={formData.location}
@@ -146,7 +176,7 @@ export function CompanyForm() {
       />
 
       <div className="pt-4">
-        <Button type="submit" label="Registrar compañía" />
+        <Button type="submit" label={mode === "edit" ? "Actualizar compañía" : "Registrar compañía"} />
       </div>
     </form>
   );

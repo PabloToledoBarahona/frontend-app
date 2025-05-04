@@ -68,7 +68,7 @@ export default function CompanyPage() {
               <Button
                 label="Registrar Compañía"
                 className="w-full max-w-xs"
-                onClick={() => router.push('/company/edit')}
+                onClick={() => router.push('/company/register')}
               />
             </div>
           )}
