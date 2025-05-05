@@ -20,18 +20,23 @@ interface CompanyCardProps {
     nit?: string;
     legal_name?: string;
     description?: string;
-    status: string;
+    status: "active" | "inactive";
   };
   locationDetails?: {
     city?: string;
     state?: string;
     country?: string;
   };
+  onStatusChange?: (newStatus: "active" | "inactive") => void;
 }
 
-export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
+export function CompanyCard({
+  company,
+  locationDetails,
+  onStatusChange,
+}: CompanyCardProps) {
   const router = useRouter();
-  const [status, setStatus] = useState(company.status);
+  const [status, setStatus] = useState<"active" | "inactive">(company.status);
   const [loading, setLoading] = useState(false);
 
   const handleToggleStatus = async () => {
@@ -40,6 +45,7 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
       if (status === "active") {
         await apiClient.put("/company/desactivate");
         setStatus("inactive");
+        onStatusChange?.("inactive");
         addToast({
           title: "Empresa desactivada",
           description: "Tu empresa ha sido desactivada correctamente.",
@@ -48,6 +54,7 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
       } else {
         await apiClient.put("/company/activate");
         setStatus("active");
+        onStatusChange?.("active");
         addToast({
           title: "Empresa activada",
           description: "Tu empresa ha sido activada correctamente.",
@@ -83,20 +90,27 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
           </DropdownTrigger>
           <DropdownMenu
             aria-label="Opciones de compañía"
-            className="min-w-[180px]"
-            variant="flat"
+            className="min-w-[180px] rounded-xl bg-white shadow-xl p-1 ring-1 ring-gray-200"
+            variant="light"
             onAction={(key) => {
               if (key === "edit") router.push("/company/edit");
               else if (key === "toggle") handleToggleStatus();
             }}
           >
-            <DropdownItem key="edit" startContent={<Pencil className="text-xl" />}>
+            <DropdownItem
+              key="edit"
+              startContent={<Pencil className="text-xl" />}
+              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+            >
               Editar compañía
             </DropdownItem>
             <DropdownItem
               key="toggle"
               startContent={<Power className="text-xl" />}
-              className={status === "active" ? "text-warning" : "text-success"}
+              className={cn(
+                "px-4 py-2 rounded-lg hover:bg-gray-100 transition-all cursor-pointer",
+                status === "active" ? "text-warning" : "text-success"
+              )}
             >
               {status === "active" ? "Desactivar compañía" : "Activar compañía"}
             </DropdownItem>
@@ -121,7 +135,8 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
       <div className="text-sm text-gray-700 space-y-2">
         {company.legal_name && (
           <p>
-            <span className="font-medium">Razón social:</span> {company.legal_name}
+            <span className="font-medium">Razón social:</span>{" "}
+            {company.legal_name}
           </p>
         )}
         {company.nit && (
@@ -131,14 +146,17 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
         )}
         {company.description && (
           <p>
-            <span className="font-medium">Descripción:</span> {company.description}
+            <span className="font-medium">Descripción:</span>{" "}
+            {company.description}
           </p>
         )}
         {locationDetails?.city &&
           locationDetails?.state &&
           locationDetails?.country && (
             <p>
-              <span className="font-medium">Ubicación:</span> {locationDetails.city}, {locationDetails.state}, {locationDetails.country}
+              <span className="font-medium">Ubicación:</span>{" "}
+              {locationDetails.city}, {locationDetails.state},{" "}
+              {locationDetails.country}
             </p>
           )}
       </div>

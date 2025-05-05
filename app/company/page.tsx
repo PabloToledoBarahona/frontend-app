@@ -26,8 +26,6 @@ interface Company {
   city_id?: string;
 }
 
-
-
 export default function CompanyPage() {
   const router = useRouter();
   const [company, setCompany] = useState<Company | null>(null);
@@ -157,6 +155,14 @@ export default function CompanyPage() {
               <CompanyCard
                 company={company}
                 locationDetails={locationDetails}
+                onStatusChange={(newStatus) => {
+                  setCompany((prev) => prev && { ...prev, status: newStatus });
+                  if (newStatus === "inactive") {
+                    setChannel(
+                      (prev) => prev && { ...prev, status: "inactive" }
+                    );
+                  }
+                }}
               />
 
               {channel && (
