@@ -33,7 +33,7 @@ export function ChannelCard({
         description: "El canal ha sido activado correctamente.",
         color: "success",
       });
-      onChannelActivated(); // esto debería re-renderizar
+      onChannelActivated();
     } catch (err) {
       console.error("Error al activar el canal:", err);
       addToast({
@@ -48,28 +48,31 @@ export function ChannelCard({
 
   return (
     <div className="bg-white p-6 rounded-3xl shadow-xl ring-1 ring-gray-200 transition hover:shadow-2xl space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Canal asociado a esta empresa
-        </h3>
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">
+            Canal asociado a esta empresa
+          </h3>
+          <p className="text-xs text-gray-500 mt-1">
+            Creado: {new Date(channel.createdAt).toLocaleDateString()}
+          </p>
+        </div>
 
         {channel.status === "inactive" && (
-          <Button
-            size="sm"
-            color="success"
-            isLoading={loading}
-            disabled={!companyIsActive}
+          <button
             onClick={handleActivateChannel}
-            startContent={<Zap size={16} />}
+            disabled={!companyIsActive || loading}
+            className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg transition-all border ${
+              companyIsActive
+                ? "bg-green-100 text-green-700 hover:bg-green-200 border-green-200"
+                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+            }`}
           >
+            <Zap size={16} />
             Activar canal
-          </Button>
+          </button>
         )}
       </div>
-
-      <p className="text-xs text-gray-500">
-        Creado: {new Date(channel.createdAt).toLocaleDateString()}
-      </p>
 
       <span
         className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
