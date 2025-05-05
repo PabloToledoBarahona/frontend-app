@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
 import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
+import { DatePicker } from "@heroui/react";
+import { parseDate } from "@internationalized/date";
 
 type User = {
   username?: string;
@@ -181,7 +183,7 @@ export default function RegisterForm() {
 
   return (
     <div className="max-w-xl mx-auto mt-10">
-      <Card className="p-8 shadow-xl rounded-2xl bg-white space-y-6">
+      <Card className="p-8 shadow-xl rounded-2xl bg-white space-y-6 overflow-visible">
         <Heading
           title="Registro de Usuario"
           subtitle="Crea tu cuenta para comenzar"
@@ -229,35 +231,50 @@ export default function RegisterForm() {
             error={errors.phone_number}
           />
 
-          <div className="relative">
-            <input
-              type="date"
-              name="date_of_birth"
-              aria-label="Fecha de nacimiento"
-              value={formData.date_of_birth}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300"
-            />
-            {errors.date_of_birth && (
-              <p className="text-sm text-red-600">{errors.date_of_birth}</p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative z-10">
+              <DatePicker
+                className="w-full"
+                label="Fecha de nacimiento"
+                value={
+                  formData.date_of_birth
+                    ? parseDate(formData.date_of_birth)
+                    : null
+                }
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    date_of_birth: value?.toString() || "",
+                  }))
+                }
+              />
+              {errors.date_of_birth && (
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.date_of_birth}
+                </p>
+              )}
+            </div>
 
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            aria-label="Género"
-            className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300"
-          >
-            <option value="">Selecciona género</option>
-            <option value="female">Femenino</option>
-            <option value="male">Masculino</option>
-            <option value="other">Otro</option>
-          </select>
-          {errors.gender && (
-            <p className="text-sm text-red-600">{errors.gender}</p>
-          )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Género
+              </label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-gray-50 border border-gray-300"
+              >
+                <option value="">Selecciona género</option>
+                <option value="female">Femenino</option>
+                <option value="male">Masculino</option>
+                <option value="other">Otro</option>
+              </select>
+              {errors.gender && (
+                <p className="text-sm text-red-600 mt-1">{errors.gender}</p>
+              )}
+            </div>
+          </div>
 
           <textarea
             name="bio"
