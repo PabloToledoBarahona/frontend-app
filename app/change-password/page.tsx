@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
@@ -15,12 +15,6 @@ export default function ChangePasswordPage() {
     new_password: '',
   });
   const [message, setMessage] = useState('');
-  useEffect(() => {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        router.push("/");
-      }
-    }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

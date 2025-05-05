@@ -59,7 +59,7 @@ export default function HeroSection() {
       </div>
 
       {/* Curva Inferior */}
-      <div className="absolute bottom-[-1px] left-0 w-full z-0">
+      <div className="absolute bottom-[-1px] left-0 w-full z-20">
         <svg
           viewBox="0 0 1440 320"
           className="w-full h-auto"

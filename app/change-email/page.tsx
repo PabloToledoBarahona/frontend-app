@@ -25,20 +25,15 @@ export default function EditProfilePage() {
       city_id: '',
     }
   });
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/");
-    }
-  }, [router]);
+
   const [message, setMessage] = useState('');
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [newEmail, setNewEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState(''); // Estado para almacenar el OTP
-  const [isOtpSent, setIsOtpSent] = useState(false); // Para saber si el OTP fue enviado
+  const [otp, setOtp] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +52,6 @@ export default function EditProfilePage() {
           location: user.location || { country_id: '', state_id: '', city_id: '' },
         });
 
-        // Obtener países
         const countriesRes = await apiClient.get('/location/countries');
         setCountries(countriesRes.data.data);
 
@@ -81,6 +75,7 @@ export default function EditProfilePage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
     if (name.startsWith('location')) {
       setFormData((prev) => ({
         ...prev,
@@ -93,17 +88,13 @@ export default function EditProfilePage() {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    // Si se cambia el país, obtener los estados
     if (name === 'location.country_id') {
-      const selectedCountryId = value;
-      apiClient.get(`/location/states/${selectedCountryId}`)
+      apiClient.get(`/location/states/${value}`)
         .then((response) => setStates(response.data.data));
     }
 
-    // Si se cambia el estado, obtener las ciudades
     if (name === 'location.state_id') {
-      const selectedStateId = value;
-      apiClient.get(`/location/cities/${selectedStateId}`)
+      apiClient.get(`/location/cities/${value}`)
         .then((response) => setCities(response.data.data));
     }
   };
@@ -127,8 +118,8 @@ export default function EditProfilePage() {
         new_email: newEmail,
       });
       if (res.status === 200) {
-        setMessage(' Te hemos enviado un OTP a tu nuevo correo.');
-        setIsOtpSent(true); // Indica que el OTP fue enviado
+        setMessage('Te hemos enviado un OTP a tu nuevo correo.');
+        setIsOtpSent(true);
       }
     } catch (error) {
       console.error(error);
@@ -138,12 +129,11 @@ export default function EditProfilePage() {
 
   const handleOtpVerification = async () => {
     try {
-      // Enviar el OTP junto con el nuevo correo al backend para su verificación
       const res = await apiClient.post('/users/me/email/confirm', {
-        otp, // OTP ingresado por el usuario
-        new_email: newEmail, // El nuevo correo que el usuario ha proporcionado
+        otp,
+        new_email: newEmail,
       });
-  
+
       if (res.status === 200) {
         setMessage('Correo electrónico verificado y actualizado correctamente');
         setTimeout(() => router.push('/profile'), 1500);
@@ -153,7 +143,6 @@ export default function EditProfilePage() {
       setMessage('Error al verificar el OTP');
     }
   };
-  
 
   return (
     <main className="min-h-screen flex bg-gray-100 ml-64">
@@ -162,7 +151,6 @@ export default function EditProfilePage() {
         <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-md mt-8">
           <Heading title="Editar Perfil" subtitle="Modifica tus datos personales" center />
           <form className="space-y-4 mt-4">
-            {/* Cambio de correo */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Nuevo correo electrónico</label>
               <Input
@@ -172,8 +160,7 @@ export default function EditProfilePage() {
                 placeholder="Nuevo correo electrónico"
               />
             </div>
-            
-            {/* Contraseña */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Contraseña</label>
               <Input
@@ -184,10 +171,9 @@ export default function EditProfilePage() {
               />
             </div>
 
-            {/* Mostrar OTP si se envió */}
             {isOtpSent && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">Ingresa el OTP enviado a tu nuevo correo electrónico</label>
+                <label className="block text-sm font-medium text-gray-700">Ingresa el OTP enviado</label>
                 <Input
                   type="text"
                   value={otp}
@@ -197,13 +183,13 @@ export default function EditProfilePage() {
               </div>
             )}
 
-            {/* Botón para enviar el OTP o verificar el OTP */}
             <Button
               type="button"
               label={isOtpSent ? "Verificar OTP" : "Cambiar correo"}
               onClick={isOtpSent ? handleOtpVerification : handleEmailChange}
             />
           </form>
+
           {message && (
             <p className="text-center mt-4 text-sm text-gray-700">{message}</p>
           )}

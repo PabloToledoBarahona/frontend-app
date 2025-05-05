@@ -14,7 +14,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await apiClient.get('/users/me'); // Usamos solo apiClient
+        const res = await apiClient.get('/users/me'); 
         setUserData(res.data?.data?.user);
       } catch (err) {
         console.error('Error al obtener datos del perfil:', err);
@@ -26,9 +26,14 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      await apiClient.post("/auth/logout", {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Error al cerrar sesión:", err);
+    } finally {
+      router.push("/");
+    }
   };
 
   const handleEditProfile = () => router.push('/edit');

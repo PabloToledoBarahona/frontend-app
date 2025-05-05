@@ -23,7 +23,6 @@ export default function UserProfilePage() {
   };
 
   const handleSave = async () => {
-    // Aquí puedes integrar tu lógica de actualización con el backend
     try {
       setMessage("Actualizado correctamente");
       setEditMode(false);
