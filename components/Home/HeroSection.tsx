@@ -1,10 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
 import Illustration from "@/public/landing-illustration.png";
 
 export default function HeroSection() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   return (
     <section className="relative w-full min-h-screen bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 py-20 lg:py-36 flex flex-col-reverse lg:flex-row items-center justify-center gap-16 relative z-10 min-h-[calc(100vh-80px)]">
@@ -23,7 +35,10 @@ export default function HeroSection() {
             recordatorios, llevar el control de pagos y gestionar tus clientes
             desde un solo lugar.
           </p>
-          <button className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full shadow-lg hover:scale-105 transition">
+          <button
+            onClick={onOpen}
+            className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full shadow-lg hover:scale-105 transition"
+          >
             Más Información
           </button>
         </motion.div>
@@ -62,6 +77,59 @@ export default function HeroSection() {
           </defs>
         </svg>
       </div>
+
+      {/* Modal personalizado */}
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        hideCloseButton={true}
+        backdrop="blur"
+        placement="center"
+        classNames={{
+          base: "relative max-w-lg mx-auto rounded-2xl bg-white/90 shadow-2xl backdrop-blur-md",
+          backdrop: "bg-black/30 backdrop-blur-sm",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              {/* Botón de cerrar arriba a la derecha */}
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl font-bold transition"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+
+              <ModalBody className="text-sm text-gray-800 space-y-4 pt-10 px-6 pb-4">
+                <h2 className="text-lg font-bold text-gray-900">
+                  ¿Qué es TeLoCobro?
+                </h2>
+                <p>
+                  TeLoCobro es una solución diseñada para simplificar el proceso
+                  de cobranza de pequeñas y medianas empresas.
+                </p>
+                <p>
+                  Desde el registro de clientes hasta la automatización de
+                  recordatorios, esta herramienta permite centralizar y
+                  controlar todos tus cobros desde una única plataforma.
+                </p>
+                <p>
+                  TeLoCobro ahorra tiempo, reduce olvidos y mejora la relación
+                  con tus clientes.
+                </p>
+              </ModalBody>
+
+              <ModalFooter className="px-6 pb-6">
+                <Button color="primary" onPress={onClose}>
+                  ¡Entendido!
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </section>
   );
 }
