@@ -9,6 +9,7 @@ import Sidebar from "@/components/ui/Sidebar";
 import { Heading } from "@/components/ui/Heading";
 import apiClient from "@/lib/apiClient";
 import axios from "axios";
+import { ChannelCard } from "@/components/Channels/ChannelCard";
 
 interface Channel {
   _id: string;
@@ -16,9 +17,20 @@ interface Channel {
   status: "active" | "inactive";
 }
 
+interface Company {
+  name: string;
+  nit?: string;
+  legal_name?: string;
+  description?: string;
+  status: "active" | "inactive";
+  city_id?: string;
+}
+
+
+
 export default function CompanyPage() {
   const router = useRouter();
-  const [company, setCompany] = useState(null);
+  const [company, setCompany] = useState<Company | null>(null);
   const [channel, setChannel] = useState<Channel | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -148,23 +160,13 @@ export default function CompanyPage() {
               />
 
               {channel && (
-                <div className="bg-white p-6 rounded-2xl shadow-md border space-y-2">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    Canal asociado a esta empresa
-                  </h3>
-                  <p className="text-xs text-gray-500">
-                    Creado: {new Date(channel.createdAt).toLocaleDateString()}
-                  </p>
-                  <span
-                    className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
-                      channel.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {channel.status === "active" ? "Activo" : "Inactivo"}
-                  </span>
-                </div>
+                <ChannelCard
+                  channel={channel}
+                  companyIsActive={company.status === "active"}
+                  onChannelActivated={() =>
+                    setChannel((prev) => prev && { ...prev, status: "active" })
+                  }
+                />
               )}
             </div>
           )}

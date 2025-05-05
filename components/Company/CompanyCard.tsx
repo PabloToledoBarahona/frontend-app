@@ -1,10 +1,17 @@
 "use client";
 
-import { Listbox, ListboxItem } from "@heroui/react";
-import { Pencil, Power } from "lucide-react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  cn,
+  addToast,
+} from "@heroui/react";
+import { MoreVertical, Pencil, Power } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button, addToast } from "@heroui/react";
 import apiClient from "@/lib/apiClient";
 
 interface CompanyCardProps {
@@ -47,7 +54,7 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
           color: "success",
         });
       }
-    } catch (err: any) {
+    } catch {
       addToast({
         title: "Error",
         description: "No se pudo cambiar el estado de la empresa.",
@@ -59,23 +66,62 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8 rounded-3xl shadow-lg ring-1 ring-gray-200 space-y-5">
-      {/* Botón de editar */}
-      <button
-        onClick={() => router.push("/company/edit")}
-        className="absolute top-4 right-4 text-gray-400 hover:text-purple-600 transition-colors"
-        aria-label="Editar compañía"
-      >
-        <Pencil size={20} />
-      </button>
+    <div className="relative bg-white p-6 rounded-3xl shadow-xl ring-1 ring-gray-200 transition hover:shadow-2xl space-y-6">
+      {/* Menú de acciones */}
+      <div className="absolute top-4 right-4 z-10">
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
+            <Button
+              variant="light"
+              size="sm"
+              isIconOnly
+              aria-label="Menú de opciones"
+              className="text-gray-500 hover:text-purple-600"
+            >
+              <MoreVertical size={18} />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Opciones de compañía"
+            className="min-w-[180px]"
+            variant="flat"
+            onAction={(key) => {
+              if (key === "edit") router.push("/company/edit");
+              else if (key === "toggle") handleToggleStatus();
+            }}
+          >
+            <DropdownItem key="edit" startContent={<Pencil className="text-xl" />}>
+              Editar compañía
+            </DropdownItem>
+            <DropdownItem
+              key="toggle"
+              startContent={<Power className="text-xl" />}
+              className={status === "active" ? "text-warning" : "text-success"}
+            >
+              {status === "active" ? "Desactivar compañía" : "Activar compañía"}
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
 
-      <h2 className="text-3xl font-bold text-gray-800">{company.name}</h2>
+      {/* Información de la compañía */}
+      <div>
+        <h2 className="text-2xl font-semibold text-gray-900">{company.name}</h2>
+        <span
+          className={`mt-2 inline-block text-xs font-medium px-3 py-1 rounded-full ${
+            status === "active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {status === "active" ? "Activa" : "Inactiva"}
+        </span>
+      </div>
 
-      <div className="border-t border-gray-200 pt-4 space-y-2 text-gray-700 text-sm">
+      <div className="text-sm text-gray-700 space-y-2">
         {company.legal_name && (
           <p>
-            <span className="font-medium">Razón social:</span>{" "}
-            {company.legal_name}
+            <span className="font-medium">Razón social:</span> {company.legal_name}
           </p>
         )}
         {company.nit && (
@@ -85,40 +131,16 @@ export function CompanyCard({ company, locationDetails }: CompanyCardProps) {
         )}
         {company.description && (
           <p>
-            <span className="font-medium">Descripción:</span>{" "}
-            {company.description}
+            <span className="font-medium">Descripción:</span> {company.description}
           </p>
         )}
         {locationDetails?.city &&
           locationDetails?.state &&
           locationDetails?.country && (
             <p>
-              <span className="font-medium">Ubicación:</span>{" "}
-              {locationDetails.city}, {locationDetails.state},{" "}
-              {locationDetails.country}
+              <span className="font-medium">Ubicación:</span> {locationDetails.city}, {locationDetails.state}, {locationDetails.country}
             </p>
           )}
-
-        <div className="pt-4 flex items-center justify-between">
-          <span
-            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-              status === "active"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {status === "active" ? "Activa" : "Inactiva"}
-          </span>
-
-          <Button
-            size="sm"
-            color={status === "active" ? "warning" : "success"}
-            onClick={handleToggleStatus}
-            isLoading={loading}
-          >
-            {status === "active" ? "Desactivar" : "Activar"}
-          </Button>
-        </div>
       </div>
     </div>
   );
